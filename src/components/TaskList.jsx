@@ -1,51 +1,59 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-function TaskList() {
-  const [tasks, setTasks] = useState([]);
-  const [text, setText] = useState("");
+function ListeTaches() {
+  // ✅ Chargement initial depuis localStorage (évite d’écraser avec [])
+  const [taches, setTaches] = useState(() => {
+    const tachesSauvegardees = localStorage.getItem("taches");
+    return tachesSauvegardees ? JSON.parse(tachesSauvegardees) : [];
+  });
 
-  const addTask = () => {
-    if (text.trim() === "") return;
-    setTasks([...tasks, { id: Date.now(), text, completed: false }]);
-    setText("");
+  const [texte, setTexte] = useState("");
+
+  const ajouterTache = () => {
+    if (texte.trim() === "") return;
+    setTaches([...taches, { id: Date.now(), texte, terminee: false }]);
+    setTexte("");
   };
 
-  const toggleTask = (id) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id
-          ? { ...task, completed: !task.completed }
-          : task
+  const basculerTache = (id) => {
+    setTaches(
+      taches.map((tache) =>
+        tache.id === id ? { ...tache, terminee: !tache.terminee } : tache
       )
     );
   };
 
-  const deleteTask = (id) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+  const supprimerTache = (id) => {
+    setTaches(taches.filter((tache) => tache.id !== id));
   };
+
+  // ✅ Sauvegarde automatique à chaque changement
+  useEffect(() => {
+    localStorage.setItem("taches", JSON.stringify(taches));
+  }, [taches]);
 
   return (
     <div>
       <input
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Add a task"
+        value={texte}
+        onChange={(e) => setTexte(e.target.value)}
+        placeholder="Ajouter une tâche"
       />
-      <button onClick={addTask}>Add</button>
+      <button onClick={ajouterTache}>Ajouter</button>
 
       <ul>
-        {tasks.map((task) => (
-          <li key={task.id}>
+        {taches.map((tache) => (
+          <li key={tache.id}>
             <span
-              onClick={() => toggleTask(task.id)}
+              onClick={() => basculerTache(tache.id)}
               style={{
-                textDecoration: task.completed ? "line-through" : "none",
+                textDecoration: tache.terminee ? "line-through" : "none",
                 cursor: "pointer",
               }}
             >
-              {task.text}
+              {tache.texte}
             </span>
-            <button onClick={() => deleteTask(task.id)}>❌</button>
+            <button onClick={() => supprimerTache(tache.id)}>❌</button>
           </li>
         ))}
       </ul>
@@ -53,4 +61,4 @@ function TaskList() {
   );
 }
 
-export default TaskList;
+export default ListeTaches;

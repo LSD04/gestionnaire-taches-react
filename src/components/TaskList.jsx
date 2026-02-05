@@ -34,26 +34,27 @@ function ListeTaches() {
 
   return (
     <div>
-      <input
-        value={texte}
-        onChange={(e) => setTexte(e.target.value)}
-        placeholder="Ajouter une tâche"
-      />
-      <button onClick={ajouterTache}>Ajouter</button>
+      <div className="inputRow">
+        <input
+          value={texte}
+          onChange={(e) => setTexte(e.target.value)}
+          placeholder="Ajouter une tâche"
+        />
+        <button className="btnAdd" onClick={ajouterTache}>Ajouter</button>
+      </div>
 
       <ul>
         {taches.map((tache) => (
           <li key={tache.id}>
             <span
+              className={`taskText ${tache.terminee ? "taskDone" : ""}`}
               onClick={() => basculerTache(tache.id)}
-              style={{
-                textDecoration: tache.terminee ? "line-through" : "none",
-                cursor: "pointer",
-              }}
             >
               {tache.texte}
             </span>
-            <button onClick={() => supprimerTache(tache.id)}>❌</button>
+            <button className="btnDelete" onClick={() => supprimerTache(tache.id)}>
+              ❌
+            </button>
           </li>
         ))}
       </ul>

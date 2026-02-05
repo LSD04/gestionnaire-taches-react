@@ -8,6 +8,8 @@ function ListeTaches() {
   });
 
   const [texte, setTexte] = useState("");
+  const [filtre, setFiltre] = useState("toutes"); // "toutes" | "afaire" | "terminees"
+
 
   const ajouterTache = () => {
     if (texte.trim() === "") return;
@@ -27,6 +29,13 @@ function ListeTaches() {
     setTaches(taches.filter((tache) => tache.id !== id));
   };
 
+  const tachesFiltrees = taches.filter((tache) => {
+    if (filtre === "afaire") return !tache.terminee;
+    if (filtre === "terminees") return tache.terminee;
+    return true; // toutes
+  });
+
+
   // ✅ Sauvegarde automatique à chaque changement
   useEffect(() => {
     localStorage.setItem("taches", JSON.stringify(taches));
@@ -42,9 +51,29 @@ function ListeTaches() {
         />
         <button className="btnAdd" onClick={ajouterTache}>Ajouter</button>
       </div>
+      <div className="filters">
+        <button
+          className={`filterBtn ${filtre === "toutes" ? "active" : ""}`}
+          onClick={() => setFiltre("toutes")}
+        >
+          Toutes
+        </button>
+        <button
+          className={`filterBtn ${filtre === "afaire" ? "active" : ""}`}
+          onClick={() => setFiltre("afaire")}
+        >
+          À faire
+        </button>
+        <button
+          className={`filterBtn ${filtre === "terminees" ? "active" : ""}`}
+          onClick={() => setFiltre("terminees")}
+        >
+          Terminées
+        </button>
+      </div>
 
       <ul>
-        {taches.map((tache) => (
+        {tachesFiltrees.map((tache) => (
           <li key={tache.id}>
             <span
               className={`taskText ${tache.terminee ? "taskDone" : ""}`}
